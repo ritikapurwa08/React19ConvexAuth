@@ -28,38 +28,38 @@ export const createProduct = mutation({
   },
 });
 
-export const updateProduct = mutation({
-  args: {
-    id: v.id("products"),
-    name: v.string(),
-    description: v.string(),
-    price: v.float64(),
-    category: v.string(),
-    imagesStorageIds: v.optional(v.array(v.id("_storage"))),
-  },
-  handler: async (ctx, args) => {
-    const currentTime = Date.now().toLocaleString();
-
-    await ctx.db.patch(args.id, {
-      ...args,
-      updatedAt: currentTime,
-    });
-
-    return args.id;
-  },
-});
-
 export const deleteProduct = mutation({
   args: {
     id: v.id("products"),
   },
   handler: async (ctx, args) => {
+    const product = await ctx.db.get(args.id);
+
+    if (!product) {
+      throw new Error(`Product with ID ${args.id} not found`);
+    }
+
+    // 1. Delete Storage Objects
+    if (product.imagesStorageIds && product.imagesStorageIds.length > 0) {
+      await Promise.all(
+        product.imagesStorageIds.map(async (storageId) => {
+          try {
+            await ctx.storage.delete(storageId);
+          } catch (error) {
+            console.error(`Error deleting storage object ${storageId}`, error);
+            // Optionally you can choose to throw or ignore this error.
+            // For this example, I'm choosing to log the error and continue.
+          }
+        })
+      );
+    }
+
+    // 2. Delete Product
     await ctx.db.delete(args.id);
 
     return args.id;
   },
 });
-
 export const getProductById = query({
   args: {
     id: v.id("products"),
@@ -87,5 +87,26 @@ export const getImagesUrl = query({
       })
     );
     return imagesUrl;
+  },
+});
+
+export const updateProduct = mutation({
+  args: {
+    id: v.id("products"),
+    name: v.string(),
+    description: v.string(),
+    price: v.float64(),
+    category: v.string(),
+    imagesStorageIds: v.optional(v.array(v.id("_storage"))),
+  },
+  handler: async (ctx, args) => {
+    const currentTime = Date.now().toLocaleString();
+    const { id, ...rest } = args;
+    await ctx.db.patch(id, {
+      ...rest,
+      updatedAt: currentTime,
+    });
+
+    return id;
   },
 });

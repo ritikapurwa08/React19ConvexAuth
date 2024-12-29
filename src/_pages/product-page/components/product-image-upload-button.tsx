@@ -9,6 +9,8 @@ type ImageUploadAndShowImageProps = {
   setImages: React.Dispatch<React.SetStateAction<File[]>>;
   onImagesSelected?: (images: File[]) => void;
   imageRef: React.RefObject<HTMLInputElement>;
+  maxImages?: number; // Allow setting max images
+  onClearImages?: () => void; // Callback for clearing images externally
 };
 
 const ProductImagesUploadButton = ({
@@ -16,18 +18,38 @@ const ProductImagesUploadButton = ({
   setImages,
   imageRef,
   onImagesSelected,
+  maxImages = 5, // Default max images
+  onClearImages,
 }: ImageUploadAndShowImageProps) => {
   const [imageURLs, setImageURLs] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const handleImageChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
+      setError(null); // Clear previous error
+
       const files = Array.from(event.target.files || []);
-      setImages((prevImages) => [...prevImages, ...files]);
-      const urls = files.map((file) => URL.createObjectURL(file));
+      const currentImageCount = images.length;
+
+      if (currentImageCount + files.length > maxImages) {
+        setError(`Maximum ${maxImages} images allowed.`);
+        if (imageRef.current) {
+          imageRef.current.value = "";
+        }
+        return;
+      }
+
+      const validFiles = files.filter(Boolean) as File[];
+      if (validFiles.length === 0) {
+        return;
+      }
+
+      setImages((prevImages) => [...prevImages, ...validFiles]);
+      const urls = validFiles.map((file) => URL.createObjectURL(file));
       setImageURLs((prevUrls) => [...prevUrls, ...urls]);
-      onImagesSelected?.([...images, ...files]);
+      onImagesSelected?.([...images, ...validFiles]);
     },
-    [onImagesSelected, setImages, images]
+    [maxImages, images, setImages, onImagesSelected, imageRef]
   );
 
   const handleRemoveImage = useCallback(
@@ -43,8 +65,7 @@ const ProductImagesUploadButton = ({
         }
         return prevUrls.filter((_, index) => index !== indexToRemove);
       });
-
-      onImagesSelected?.(images.filter((_, index) => index !== indexToRemove)); // Call callback
+      onImagesSelected?.(images.filter((_, index) => index !== indexToRemove));
 
       if (images.length === 1) {
         if (imageRef.current) {
@@ -69,6 +90,12 @@ const ProductImagesUploadButton = ({
     }
   }, [images]);
 
+  useEffect(() => {
+    if (onClearImages) {
+      onClearImages();
+    }
+  }, [onClearImages]);
+
   return (
     <div id="fantom-editor-input" className="flex flex-col">
       <Input
@@ -79,6 +106,7 @@ const ProductImagesUploadButton = ({
         className="hidden"
         multiple
       />
+      {error && <div className="text-red-500">{error}</div>}
       <div className="flex flex-wrap gap-2">
         {imageURLs.map((url, index) => (
           <div key={index} className="p-2 relative group w-[100px] h-[100px]">

@@ -1,10 +1,9 @@
 // src/components/products/UpdateProductDialog.tsx
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -17,146 +16,165 @@ import CustomSelect from "@/components/forms/custom-select";
 import CustomNumberInput from "@/components/forms/custom-number-input";
 import SubmitLoader from "@/components/custom/app-components/loaders/submit-loader";
 import { Form } from "@/components/ui/form";
-import { useGenerateUploadUrl } from "@/_pages/blog-page/api/use-generate-upload-url";
 import ProductImagesUploadButton from "./product-image-upload-button";
 import { Id } from "@convex/_generated/dataModel";
-import { UpdateProductType, useUpdateProduct } from "../api/update-product";
 import { UseGetProductById } from "../api/use-get-product-by-id";
 import { CategoryOptionForSelect } from "../api/create-product";
+import { useImageUpload } from "../api/use-image-upload-hook";
+import {
+  productType,
+  productZodType,
+  UseUpdateProduct,
+} from "../api/update-product";
 
 interface UpdateProductDialogProps {
   productId: Id<"products">;
-  open: boolean;
-  setOpen: (open: boolean) => void;
 }
-
-type ProductWithImageUpload = UpdateProductType & {
-  imagesStorageIds?: Id<"_storage">[];
-};
 
 const UpdateProductDialog: React.FC<UpdateProductDialogProps> = ({
   productId,
-  open,
-  setOpen,
 }) => {
+  const [open, setOpen] = useState(false);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [isUpdating, setIsUpdating] = useState(false); // prevent multiple update while one update is going
   const imageElementRef = useRef<HTMLInputElement>(null);
+  const [submitLoading, setSubmitLoading] = useState(false); // Unified loading state
 
   const { product } = UseGetProductById({ id: productId });
+
+  const { loading: imageUploadLoading, uploadImages } = useImageUpload();
 
   const {
     mutate: updateProduct,
     isPending: updatingProduct,
-    form: updateForm,
-  } = useUpdateProduct();
-
-  const { mutate: generateUploadUrl, isPending: generatingImage } =
-    useGenerateUploadUrl();
+    productZodForm,
+  } = UseUpdateProduct();
 
   const handleImageSelect = (images: File[]) => {
-    setSelectedImages(images);
-  };
+    // Filter out null or undefined images
+    const validImages = images.filter(Boolean) as File[];
 
-  const handleUpdateProduct = async (datas: UpdateProductType) => {
-    try {
-      const values: ProductWithImageUpload = {
-        ...datas,
-        id: productId,
-        imagesStorageIds: product?.imagesStorageIds || [],
-      };
-      if (selectedImages.length > 0) {
-        const imageStorageIds: Id<"_storage">[] = [];
-        for (const image of selectedImages) {
-          const url = await generateUploadUrl(
-            {},
-            {
-              throwError: true,
-            }
-          );
-
-          if (!url) throw new Error("URL not found.");
-
-          const result = await fetch(url, {
-            method: "POST",
-            headers: { "Content-type": image.type },
-            body: image,
-          });
-
-          if (!result.ok) throw new Error("Failed to upload image.");
-
-          const { storageId } = await result.json();
-
-          imageStorageIds.push(storageId);
-        }
-        values.imagesStorageIds = imageStorageIds;
-      }
-      await updateProduct(values, { throwError: true });
-      setOpen(false);
-    } catch (e) {
-      console.log(e);
+    // Only update if there are valid images
+    if (validImages.length > 0) {
+      setSelectedImages(validImages);
+    } else {
+      setSelectedImages([]); // reset the selected images
     }
   };
+
+  const handleUpdateProduct = async (datas: productZodType) => {
+    if (isUpdating) {
+      return; // Prevent multiple updates if already updating
+    }
+
+    setIsUpdating(true);
+    setSubmitLoading(true);
+
+    try {
+      const { ...rest } = datas;
+
+      const existingImageIds = product?.imagesStorageIds || []; // get existing or default to empty array
+
+      let newImageStorageIds: Id<"_storage">[] = [];
+
+      if (selectedImages.length > 0) {
+        newImageStorageIds = await uploadImages(selectedImages);
+      }
+
+      const updatedImageIds = [...existingImageIds, ...newImageStorageIds];
+
+      const values: productType = {
+        ...rest,
+        id: productId,
+        imagesStorageIds: updatedImageIds, // Use existing image IDs as default if no new image
+      };
+
+      await updateProduct({ ...values }, { throwError: true });
+      setOpen(false);
+      setSelectedImages([]); // Reset selected images after successful update
+    } catch (e) {
+      console.error("Error updating product:", e); // Log the error with more detail
+    } finally {
+      setIsUpdating(false); // allow update again
+      setSubmitLoading(false); // Stop loading
+    }
+  };
+  // Use useEffect to set form values when product data is available
+  useEffect(() => {
+    if (product) {
+      productZodForm.setValue("name", product.name);
+      productZodForm.setValue("description", product.description);
+      productZodForm.setValue("category", product.category);
+      productZodForm.setValue("price", product.price);
+      productZodForm.setValue("imagesStorageIds", product.imagesStorageIds);
+    }
+  }, [product, productZodForm.setValue, productZodForm]);
+
+  const isFormDisabled =
+    submitLoading || updatingProduct || imageUploadLoading || isUpdating;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant={"outline"}>Update Product</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Update Product</DialogTitle>
           <DialogDescription>Update Product Details</DialogDescription>
         </DialogHeader>
-        <Form {...updateForm}>
+        <Form {...productZodForm}>
           <form
             className="space-y-4"
-            onSubmit={updateForm.handleSubmit(handleUpdateProduct)}
+            onSubmit={productZodForm.handleSubmit(handleUpdateProduct)}
           >
             <CustomInput
-              control={updateForm.control}
+              control={productZodForm.control}
               name="name"
               label="Enter Product Name"
               placeholder="Enter Product Name"
-              disabled={updatingProduct || generatingImage}
+              disabled={isFormDisabled}
             />
             <CustomTextarea
-              control={updateForm.control}
+              control={productZodForm.control}
               label="Enter Product Description"
               placeholder="Enter Product Description"
-              disabled={updatingProduct || generatingImage}
+              disabled={isFormDisabled}
               name="description"
             />
             <CustomSelect
               options={CategoryOptionForSelect}
-              control={updateForm.control}
+              control={productZodForm.control}
               placeholder="Select Category"
               name="category"
               label="Select Category"
-              disabled={updatingProduct || generatingImage}
+              disabled={isFormDisabled}
             />
             <CustomNumberInput
-              control={updateForm.control}
+              control={productZodForm.control}
               name="price"
               label="Enter Product Price"
               placeholder="Enter Product Price"
-              disabled={updatingProduct || generatingImage}
+              disabled={isFormDisabled}
             />
-            <div className="w-full h-full ">
+            <div className="w-full h-40 ">
               <ProductImagesUploadButton
                 images={selectedImages}
                 setImages={setSelectedImages}
                 imageRef={imageElementRef}
                 onImagesSelected={handleImageSelect}
+                onClearImages={() => setSelectedImages([])} // for update
+                //  onClearImages={()=> setSelectedImages([])} // for create
               />
             </div>
-            <DialogFooter className="p-0">
+            <div className="flex ">
               <SubmitLoader
                 defaultText="Update Product"
                 loadingText="Updating Product"
                 loadingIcon={Loader2}
-                loadingState={updatingProduct || generatingImage}
+                loadingState={submitLoading}
               />
-            </DialogFooter>
+            </div>
           </form>
         </Form>
       </DialogContent>

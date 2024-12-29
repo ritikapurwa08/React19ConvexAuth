@@ -14,6 +14,8 @@ import React from "react";
 import { Heart, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProductImageCarousel from "./product-image-carousel";
+import UpdateProductDialog from "./update-product-dialog";
+import DeleteProductDialog from "./delete-product-dialog";
 
 type ProductType = Doc<"products">;
 
@@ -23,7 +25,6 @@ const ProductCard: React.FC<ProductType> = ({
   description,
   name,
   price,
-  updatedAt,
   _creationTime,
   imagesStorageIds,
 }) => {
@@ -81,6 +82,10 @@ const ProductCard: React.FC<ProductType> = ({
           >
             <ShoppingCart className="size-4" />
           </Button>
+        </div>
+        <div>
+          <DeleteProductDialog productName={name} productId={_id} />
+          <UpdateProductDialog productId={_id} />
         </div>
       </CardFooter>
     </Card>

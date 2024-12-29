@@ -13,6 +13,7 @@ interface SubmitLoaderProps {
   loadingState: boolean;
   className?: string; // optional prop to add custom styles
   btnClassName?: string;
+  onClick?: () => Promise<void>;
   // Optional prop for button
 }
 

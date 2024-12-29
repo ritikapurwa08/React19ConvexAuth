@@ -3,27 +3,9 @@ import { useMutation } from "convex/react";
 import { useCallback, useMemo, useState } from "react";
 import { api } from "@/../convex/_generated/api";
 import type { Id } from "@/../convex/_generated/dataModel";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-export const productZodSchema = z.object({
-  name: z.string().min(1),
-  description: z.string().min(1),
-  price: z.number().min(1),
-  category: z.string().min(1),
-  imagesStorageIds: z.array(z.string()).optional(),
-});
-
-export type productZodType = z.infer<typeof productZodSchema>;
 
 export type productType = {
   id: Id<"products">;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  imagesStorageIds?: Id<"_storage">[];
 };
 
 type RequestType = productType;
@@ -36,7 +18,7 @@ type Options = {
   throwError?: boolean;
 };
 
-export const UseUpdateProduct = () => {
+export const UseDeleteProduct = () => {
   const [data, setData] = useState<ResponseType>(null);
   const [error, setError] = useState<Error | null>(null);
   const [status, setStatus] = useState<
@@ -48,7 +30,7 @@ export const UseUpdateProduct = () => {
   const isError = useMemo(() => status === "error", [status]);
   const isSettled = useMemo(() => status === "settled", [status]);
 
-  const mutation = useMutation(api.products.updateProduct);
+  const mutation = useMutation(api.products.deleteProduct);
 
   const mutate = useCallback(
     async (values: RequestType, options?: Options) => {
@@ -72,17 +54,6 @@ export const UseUpdateProduct = () => {
     [mutation]
   );
 
-  const productZodForm = useForm<productZodType>({
-    resolver: zodResolver(productZodSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      price: 0,
-      category: "",
-      imagesStorageIds: [],
-    },
-  });
-
   return {
     mutate,
     data,
@@ -91,6 +62,5 @@ export const UseUpdateProduct = () => {
     isError,
     isSuccess,
     isSettled,
-    productZodForm,
   };
 };
