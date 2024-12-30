@@ -5,7 +5,6 @@ import ProductPage from "./_pages/product-page/components/product-list";
 import AuthPage from "./_pages/auth-page/components/auth-page";
 import CreateProductPage from "./_pages/product-page/components/create-product-page";
 import FavoritePage from "./_pages/favorites-page/components";
-import UserDetailsPage from "./_pages/user-page/components/user-details-page";
 import HomePage from "./_pages/home-page/comonents/home-page";
 import CartPage from "./_pages/cart-page/components/cart-page";
 import { useConvexAuth } from "convex/react";
@@ -31,7 +30,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const App = () => {
-  const { isAuthenticated, isLoading } = useConvexAuth();
+  const { isLoading } = useConvexAuth();
 
   return (
     <>
