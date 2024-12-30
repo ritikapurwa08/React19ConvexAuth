@@ -10,10 +10,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
 import { Id } from "@convex/_generated/dataModel";
 import { UseDeleteProduct } from "../api/use-delete-product";
-import SubmitLoader from "@/components/custom/app-components/loaders/submit-loader";
 
 interface DeleteProductDialogProps {
   productId: Id<"products">;

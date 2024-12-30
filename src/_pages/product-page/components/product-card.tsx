@@ -11,7 +11,7 @@ import { Doc } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { formatDistanceToNow } from "date-fns";
 import React from "react";
-import { Heart, ShoppingCart } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProductImageCarousel from "./product-image-carousel";
 import UpdateProductDialog from "./update-product-dialog";
@@ -68,13 +68,6 @@ const ProductCard: React.FC<ProductType> = ({
           )}
         </div>
         <div className="flex gap-2 items-center">
-          <Button
-            size="icon"
-            variant="outline"
-            className="rounded-full size-8 border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <Heart className="size-4" />
-          </Button>
           <Button
             size="icon"
             variant="outline"

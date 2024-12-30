@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Loader2, LogOut } from "lucide-react";
 import { UseGetCurrentUser } from "../api/use-current-user";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
 const UserButton = () => {
@@ -78,6 +78,11 @@ const UserButton = () => {
           <div className="text-xs text-gray-500 dark:text-gray-400">
             {user?.email || "No email provided"}
           </div>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Button type="button" variant={"ghost"} asChild>
+            <Link to="/user-profile">Edit Profile</Link>
+          </Button>
         </DropdownMenuItem>
         <DropdownMenuItem
           onSelect={handleSignOut}
