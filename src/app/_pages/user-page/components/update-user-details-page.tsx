@@ -9,10 +9,9 @@ import {
   UpdateUserDetailsZodType,
   useUpdateUserDetails,
 } from "../hooks/mutation/update-user-details";
-import CustomProfileSelect, {
-  fruitOptions,
-} from "@/components/forms/profile-select";
 import CustomTextarea from "@/components/forms/custom-textarea";
+import CustomProfileSelect from "@/components/forms/profile-select";
+import { fruitOptions } from "@/constants/data";
 
 const UpdateUserDetailsPage = () => {
   const [showSuccess, setShowSuccess] = useState(false);

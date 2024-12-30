@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   createUserDetailsZodType,
   useCreateUserDetails,
@@ -8,9 +8,7 @@ import SubmitLoader from "@/components/custom/app-components/loaders/submit-load
 import { LoaderIcon } from "lucide-react";
 import CustomInput from "@/components/forms/custom-input";
 import { UseGetCurrentUser } from "../api/use-current-user";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner"; // Assuming you are using sonner for toast notifications
-import { UseGetUserDetails } from "../hooks/query/use-get-user-details-by-id";
 
 const UserDetailsPage = () => {
   const [showSuccess, setShowSuccess] = useState(false);

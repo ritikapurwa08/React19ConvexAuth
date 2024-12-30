@@ -13,13 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { appleImage, bananaImage, pineAppleImage } from "../custom/svgIcon";
-
-interface SelectOption {
-  label: string;
-  value: string;
-  image: string; // Path to the local image
-}
+import { SelectOption } from "@/constants/data";
 
 interface CustomSelectProps<T extends FieldValues> {
   control: Control<T>;
@@ -34,19 +28,11 @@ interface CustomSelectProps<T extends FieldValues> {
   onImageChange?: (imageUrl: string) => void; // Callback for image change
 }
 
-export const fruitOptions: SelectOption[] = [
-  { label: "Apple", value: "apple", image: appleImage },
-  { label: "Banana", value: "banana", image: bananaImage },
-  { label: "Pineapple", value: "pineapple", image: pineAppleImage },
-];
-
 export default function CustomProfileSelect<T extends FieldValues>({
   name,
   className,
   error,
-  placeholder,
   disabled,
-  label,
   control,
   options,
   onChange,
