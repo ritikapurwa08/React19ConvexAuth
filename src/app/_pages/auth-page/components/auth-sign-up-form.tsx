@@ -10,7 +10,6 @@ import { AuthZodForm } from "../constants/auh-zod-form";
 import CustomInput from "@/components/forms/custom-input";
 import CustomPasswordInput from "@/components/forms/custom-password-input";
 import SubmitLoader from "@/components/custom/app-components/loaders/submit-loader";
-import { useCreateUserDetails } from "@/app/_pages/user-page/hooks/mutation/use-create-user-details";
 
 const SignUpInputs = () => {
   const { signIn } = useAuthActions();
@@ -18,8 +17,6 @@ const SignUpInputs = () => {
   const [loading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const { signUpZodForm } = AuthZodForm();
-
-  const { mutate: addUserNameAndEmail } = useCreateUserDetails();
 
   const handleSignUp = (values: AuthSignUpSchemaType) => {
     setIsLoading(true);
@@ -33,13 +30,7 @@ const SignUpInputs = () => {
     })
       .then(() => {
         navigate("/");
-        addUserNameAndEmail({
-          existingUserId: undefined,
-          extraUserDetais: {
-            name: values.name,
-            email: values.email,
-          },
-        });
+
         toast.success("sign up Successfull");
       })
       .catch((err) => {

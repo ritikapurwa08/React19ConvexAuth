@@ -8,7 +8,7 @@ import {
   TriangleAlertIcon,
 } from "lucide-react";
 import { Form } from "@/components/ui/form";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AuthSignInSchemaType } from "../constants/auth-types";
 import { AuthZodForm } from "../constants/auh-zod-form";
 import CustomInput from "@/components/forms/custom-input";
@@ -21,6 +21,8 @@ const SignInInput = () => {
   const [error, setError] = useState("");
   const { signInZodForm } = AuthZodForm();
 
+  const location = useLocation();
+
   const handleSignIn = (values: AuthSignInSchemaType) => {
     setIsloading(true);
     setError("");
@@ -30,16 +32,18 @@ const SignInInput = () => {
       flow: "signIn",
     })
       .then(() => {
-        toast.success("sign in Successfull");
+        navigate("/");
+        console.log(location.pathname);
+        toast.success("Sign in Successful");
       })
       .catch((err) => {
         setError(err);
       })
       .finally(() => {
         setIsloading(false);
-        navigate("/");
       });
   };
+
   return (
     <Form {...signInZodForm}>
       <form

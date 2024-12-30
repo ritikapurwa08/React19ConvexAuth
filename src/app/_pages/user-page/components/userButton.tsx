@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Loader2, LogOut } from "lucide-react";
 import { UseGetCurrentUser } from "../api/use-current-user";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
 const UserButton = () => {
@@ -21,7 +21,7 @@ const UserButton = () => {
 
   const [loading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
+  const location = useLocation();
   const userNameTextIcon = user?.name?.charAt(0)?.toUpperCase() || "?";
 
   const handleSignOut = async () => {
@@ -30,6 +30,9 @@ const UserButton = () => {
 
     await signOut()
       .then(() => {
+        navigate("/auth");
+        console.log(location.pathname);
+
         toast({
           variant: "default",
           title: "Signed Out Successfully",
@@ -45,7 +48,6 @@ const UserButton = () => {
       })
       .finally(() => {
         setIsLoading(false);
-        navigate("./auth");
       });
   };
 
