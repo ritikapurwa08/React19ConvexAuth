@@ -11,13 +11,14 @@ import { Doc } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { formatDistanceToNow } from "date-fns";
 import React from "react";
-import { ShoppingCart } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import ProductImageCarousel from "./product-image-carousel";
 import UpdateProductDialog from "./update-product-dialog";
 import DeleteProductDialog from "./delete-product-dialog";
+import AddToFavoriteButton from "@/_pages/favorites-page/components/add-to-favorite-button";
 
-type ProductType = Doc<"products">;
+type ProductType = Doc<"products"> & {
+  showModification?: boolean;
+};
 
 const ProductCard: React.FC<ProductType> = ({
   _id,
@@ -27,6 +28,7 @@ const ProductCard: React.FC<ProductType> = ({
   price,
   _creationTime,
   imagesStorageIds,
+  showModification,
 }) => {
   const imageUrls =
     useQuery(
@@ -68,17 +70,15 @@ const ProductCard: React.FC<ProductType> = ({
           )}
         </div>
         <div className="flex gap-2 items-center">
-          <Button
-            size="icon"
-            variant="outline"
-            className="rounded-full size-8 border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <ShoppingCart className="size-4" />
-          </Button>
+          <AddToFavoriteButton productId={_id} />
         </div>
         <div>
-          <DeleteProductDialog productName={name} productId={_id} />
-          <UpdateProductDialog productId={_id} />
+          {showModification && (
+            <div>
+              <DeleteProductDialog productName={name} productId={_id} />
+              <UpdateProductDialog productId={_id} />
+            </div>
+          )}
         </div>
       </CardFooter>
     </Card>

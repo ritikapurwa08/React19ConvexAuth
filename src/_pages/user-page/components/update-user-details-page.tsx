@@ -9,6 +9,10 @@ import {
   UpdateUserDetailsZodType,
   useUpdateUserDetails,
 } from "../hooks/mutation/update-user-details";
+import CustomProfileSelect, {
+  fruitOptions,
+} from "@/components/forms/profile-select";
+import CustomTextarea from "@/components/forms/custom-textarea";
 
 const UpdateUserDetailsPage = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -97,6 +101,13 @@ const UpdateUserDetailsPage = () => {
               onSubmit={form.handleSubmit(handleUpdateUserDetails)}
               className="space-y-6"
             >
+              <CustomProfileSelect
+                control={form.control}
+                name="extraUserDetails.customProfilePicture"
+                label="Select a Fruit"
+                placeholder="Choose a fruit"
+                options={fruitOptions}
+              />
               <div className="flex flex-row gap-x-2">
                 <CustomInput
                   control={form.control}
@@ -113,20 +124,7 @@ const UpdateUserDetailsPage = () => {
                   placeholder="Enter your last name"
                 />
               </div>
-              <CustomInput
-                control={form.control}
-                label="Phone Number"
-                name="extraUserDetails.phoneNumber"
-                disabled={updatingUserDetails}
-                placeholder="Enter your phone number"
-              />
-              <CustomInput
-                control={form.control}
-                label="Address"
-                name="extraUserDetails.address"
-                disabled={updatingUserDetails}
-                placeholder="Enter your address"
-              />
+
               <div className="flex flex-row gap-x-2">
                 <CustomInput
                   control={form.control}
@@ -142,14 +140,22 @@ const UpdateUserDetailsPage = () => {
                   disabled={updatingUserDetails}
                   placeholder="Enter an additional name"
                 />
+                <CustomInput
+                  control={form.control}
+                  label="Phone Number"
+                  name="extraUserDetails.phoneNumber"
+                  disabled={updatingUserDetails}
+                  placeholder="Enter your phone number"
+                />
               </div>
-              <CustomInput
+              <CustomTextarea
                 control={form.control}
-                label="Profile Picture URL"
-                name="extraUserDetails.customProfilePicture"
+                label="Address"
+                name="extraUserDetails.address"
                 disabled={updatingUserDetails}
-                placeholder="Enter a URL for your profile picture"
+                placeholder="Enter your address"
               />
+
               <div>
                 <SubmitLoader
                   defaultText="Update Details"
