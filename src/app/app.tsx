@@ -1,15 +1,15 @@
-import { Route, Routes, Navigate } from "react-router-dom";
-import Navbar from "./components/custom/app-components/navbar/navbar";
-import ProductLayout from "./_pages/product-page/components/product-layout";
-import ProductPage from "./_pages/product-page/components/product-list";
-import AuthPage from "./_pages/auth-page/components/auth-page";
-import CreateProductPage from "./_pages/product-page/components/create-product-page";
-import FavoritePage from "./_pages/favorites-page/components";
-import HomePage from "./_pages/home-page/comonents/home-page";
-import CartPage from "./_pages/cart-page/components/cart-page";
+import AuthPage from "@/app/_pages/auth-page/components/auth-page";
+import CartPage from "@/app/_pages/cart-page/components/cart-page";
+import FavoritePage from "@/app/_pages/favorites-page/components";
+import HomePage from "@/app/_pages/home-page/comonents/home-page";
+import CreateProductPage from "@/app/_pages/product-page/components/create-product-page";
+import ProductLayout from "@/app/_pages/product-page/components/product-layout";
+import ProductPage from "@/app/_pages/product-page/components/product-list";
+import UserProfilePage from "@/app/_pages/user-page/components/user-profile-page";
+import Navbar from "@/components/custom/app-components/navbar/navbar";
+import { Toaster } from "@/components/ui/toaster";
 import { useConvexAuth } from "convex/react";
-import UserProfilePage from "./_pages/user-page/components/user-profile-page";
-import { Toaster } from "./components/ui/toaster";
+import { Route, Routes, Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useConvexAuth();

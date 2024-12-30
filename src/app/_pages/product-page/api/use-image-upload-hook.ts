@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Id } from "@convex/_generated/dataModel";
-import { useGenerateUploadUrl } from "@/_pages/blog-page/api/use-generate-upload-url";
+import { useGenerateUploadUrl } from "@/app/_pages/blog-page/api/use-generate-upload-url";
 
 type UseImageUploadResult = {
   loading: boolean;

@@ -14,7 +14,7 @@ import React from "react";
 import ProductImageCarousel from "./product-image-carousel";
 import UpdateProductDialog from "./update-product-dialog";
 import DeleteProductDialog from "./delete-product-dialog";
-import AddToFavoriteButton from "@/_pages/favorites-page/components/add-to-favorite-button";
+import AddToFavoriteButton from "@/app/_pages/favorites-page/components/add-to-favorite-button";
 
 type ProductType = Doc<"products"> & {
   showModification?: boolean;

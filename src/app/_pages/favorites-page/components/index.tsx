@@ -1,5 +1,5 @@
 // Update the path if needed
-import ProductCard from "@/_pages/product-page/components/product-card";
+import ProductCard from "@/app/_pages/product-page/components/product-card";
 import { GetAllFavoriteProducts } from "../hooks/query/get-all-favorite-products";
 import { Loader2 } from "lucide-react";
 

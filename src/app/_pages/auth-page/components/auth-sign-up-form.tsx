@@ -10,7 +10,7 @@ import { AuthZodForm } from "../constants/auh-zod-form";
 import CustomInput from "@/components/forms/custom-input";
 import CustomPasswordInput from "@/components/forms/custom-password-input";
 import SubmitLoader from "@/components/custom/app-components/loaders/submit-loader";
-import { useCreateUserDetails } from "@/_pages/user-page/hooks/mutation/use-create-user-details";
+import { useCreateUserDetails } from "@/app/_pages/user-page/hooks/mutation/use-create-user-details";
 
 const SignUpInputs = () => {
   const { signIn } = useAuthActions();

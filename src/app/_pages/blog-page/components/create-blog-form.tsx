@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useCreateBlog } from "@/_pages/blog-page/api/create-blog";
+import { useCreateBlog } from "@/app/_pages/blog-page/api/create-blog";
 import { SubmitHandler } from "react-hook-form";
 import ImageUploadAndShowImage from "./image-upload-button";
 import { useRef, useState } from "react";

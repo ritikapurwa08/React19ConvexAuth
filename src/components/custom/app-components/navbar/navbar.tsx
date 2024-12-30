@@ -2,7 +2,7 @@ import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { MenuIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import UserButton from "@/_pages/user-page/components/userButton";
+import UserButton from "@/app/_pages/user-page/components/userButton";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
